@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:replace="${title}">博客详情</title>
+  <link rel="shortcut icon" href="../static/images/favicon.ico" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" href="../static/lib/semantic/semantic.min.css" th:href="@{/lib/semantic/semantic.min.css}">
+  <link rel="stylesheet" href="../static/css/typo.css" th:href="@{/css/typo.css}">
+  <link rel="stylesheet" href="../static/css/animate.css" th:href="@{/css/animate.css}">
+  <link rel="stylesheet" href="../static/lib/prism/prism.css" th:href="@{/lib/prism/prism.css}">
+  <link rel="stylesheet" href="../static/lib/tocbot/tocbot.css" th:href="@{/lib/tocbot/tocbot.css}">
+  <link rel="stylesheet" href="../static/css/mine.css" th:href="@{/css/mine.css}">
+  <link rel="stylesheet" href="../static/lib/aplayer/APlayer.min.css" th:href="@{/lib/aplayer/APlayer.min.css}">
+</head>
+<body>
+
+
+<!--导航-->
+<nav th:fragment="menu(n)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small" >
+  <div class="ui container">
+    <div class="ui inverted secondary stackable menu">
+      <!--stackable可堆叠，响应移动端-->
+      <h2 class="ui teal header item" style="font-family: STSong">HYY</h2>
+      <a href="#" th:href="@{/}" class="m-item item m-mobile-hide " th:classappend="${n==1} ? 'active'"><i class="home icon"></i>首页</a>
+      <a href="#" th:href="@{/types/-1}" class="m-item item m-mobile-hide" th:classappend="${n==2} ? 'active'"><i class="idea icon"></i>分类</a>
+      <a href="#" th:href="@{/tags/-1}" class="m-item item m-mobile-hide" th:classappend="${n==3} ? 'active'"><i class="tags icon"></i>标签</a>
+      <a href="#" th:href="@{/archives}" class="m-item item m-mobile-hide" th:classappend="${n==4} ? 'active'"><i class="hourglass half icon"></i>归档</a>
+      <a href="#" th:href="@{/music}" class="m-item item m-mobile-hide" th:classappend="${n==5} ? 'active'"><i class="music icon"></i>音乐</a>
+      <a href="#" th:href="@{/about}" class="m-item item m-mobile-hide" th:classappend="${n==6} ? 'active'"><i class="info icon"></i>关于我</a>
+      <div class="right m-item item m-mobile-hide">
+        <form name="search" action="#" th:action="@{/search}" method="get" target="_blank">
+          <div class="ui icon inverted transparent input m-margin-tb-tiny">
+            <input type="text" name="query" placeholder="Search...." th:value="${query}">
+            <i onclick="document.forms['search'].submit()" class="search link icon"></i>
+          </div>
+        </form>
+      </div>
+      <a href="#" th:href="@{/admin}" class="right m-item item ui secondary basic button m-mobile-hide" target="_blank"><i class="sign in icon"></i>登录</a>
+    </div>
+  </div>
+  <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+    <i class="sidebar icon"></i>
+  </a>
+</nav>
+
+
+
+<!--底部footer-->
+<footer th:fragment="footer" class="ui inverted vertical segment m-padded-tb footer">
+  <div class="ui center aligned container">
+    <div class="ui inverted divided stackable grid">
+      <div class="four wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced">微信</h4>
+        <div class="ui inverted link list">
+          <div class="item">
+            <img src="../static/images/wechat.jpg" th:src="@{/images/wechat.jpg}"  class="ui rounded image" alt="" style="width: 110px">
+          </div>
+        </div>
+      </div>
+      <div class="four wide column" >
+        <h4 class="ui inverted header m-text-thin m-text-spaced" >最新博客</h4>
+        <div class="ui inverted link list">
+          <a href="#" th:href="@{/blog/{id}(id=${blog.id})}" target="_blank" class="item m-text-thin m-padded-tb-small" th:each="blog : ${newBlogs}" th:text="${blog.title}">用户故事（User Story）</a>
+          <!--/*-->
+          <a href="#" class="item m-text-thin m-padded-tb-small">用户故事（User Story）</a>
+          <a href="#" class="item m-text-thin m-padded-tb-small">用户故事（User Story）</a>
+          <!--*/-->
+        </div>
+      </div>
+      <div class="four wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced">联系我</h4>
+        <div class="ui inverted link list">
+          <div class="item m-text-thin m-padded-tb" th:text="#{index.qq}">QQ：1299694047</div>
+          <div class="item m-text-thin m-padded-tb" th:text="#{index.email}">1299694047@qq.com</div>
+        </div>
+      </div>
+      <div class="four wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced">博客统计信息</h4>
+        <div class="m-text-thin m-padded-tb-tiny" style="text-align: left;margin-left: 75px;">
+          博客总数： <h2 class="ui teal header m-inline-block m-margin-top-null" style="font-size:medium;" th:text="${blogsCount}"> 14 </h2> 篇
+        </div>
+        <div class="m-text-thin m-padded-tb-tiny" style="text-align: left;margin-left: 75px">
+          访问总数： <h2 class="ui teal header m-inline-block m-margin-top-null" style="font-size:medium;" th:text="${viewsCount}"> 14 </h2> 次
+        </div>
+        <div class="m-text-thin m-padded-tb-tiny" style="text-align: left;margin-left: 75px">
+          评论总数： <h2 class="ui teal header m-inline-block m-margin-top-null" style="font-size:medium;" th:text="${commentsCount}"> 14 </h2> 条
+        </div>
+      </div>
+    </div>
+    <div class="ui inverted section divider"></div>
+    <div class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2023 - <span th:text="${#dates.year(#dates.createNow())}">2023</span> HYY</div>
+    <div style="color: #F08047" class="m-text-thin m-text-spaced m-opacity-tiny m-padded-tb-small">我的博客已安全运行：<span id="htmer_time" class="item m-text-thin"></span> (*๓´╰╯`๓)</div>
+    <a rel="nofollow" href="#" target="_blank">粤ICP备2022122083号-1</a>
+  </div>
+</footer>
+
+<th:block th:fragment="script">
+  <script src="../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+  <script src="../static/lib/semantic/semantic.min.js" th:src="@{/lib/semantic/semantic.min.js}"></script>
+  <script src="../static/js/jquery.scrollTo.min.js" th:src="@{/js/jquery.scrollTo.min.js}"></script>
+  <script src="../static/lib/prism/prism.js" th:src="@{/lib/prism/prism.js}"></script>
+  <script src="../static/lib/tocbot/tocbot.min.js" th:src="@{/lib/tocbot/tocbot.min.js}"></script>
+  <script src="../static/lib/qrcode/qrcode.min.js" th:src="@{/lib/qrcode/qrcode.min.js}"></script>
+  <script src="../static/lib/waypoints/jquery.waypoints.min.js" th:src="@{/lib/waypoints/jquery.waypoints.min.js}"></script>
+  <!--动态线条-->
+  <script src="../static/js/canvas-nest.min.js" th:src="@{/js/canvas-nest.min.js}" type="text/javascript" color="255,255,255" opacity='0.7' zIndex="-2" count="150" ></script>
+  <!--打印字符串-->
+  <script src="../static/lib/typed/dist/typed.umd.js" th:src="@{/lib/typed/dist/typed.umd.js}"></script>
+  <!--音乐播放器-->
+  <script src="../static/lib/aplayer/Meting.min.js" th:src="@{/lib/aplayer/Meting.min.js}"></script>
+  <script src="../static/lib/aplayer/APlayer.min.js" th:src="@{/lib/aplayer/APlayer.min.js}"></script>
+  <!--<meting-js server="netease" type="playlist" id="3778678" fixed="true" mini="true" autoplay="true" order="list" volume="0.5"></meting-js>-->
+  <meting-js server="tencent" type="playlist" id="8939924636" fixed="true" mini="true" autoplay="true" order="list" volume="0.5"></meting-js>
+  <script>
+    $('.footer').load(/*[[@{/footer}]]*/"/footer");
+
+    // 运行时间统计
+    function secondToDate(second) {
+        if (!second) {
+            return 0;
+        }
+        var time = new Array(0, 0, 0, 0, 0);
+        if (second >= 365 * 24 * 3600) {
+            time[0] = parseInt(second / (365 * 24 * 3600));
+            second %= 365 * 24 * 3600;
+        }
+        if (second >= 24 * 3600) {
+            time[1] = parseInt(second / (24 * 3600));
+            second %= 24 * 3600;
+        }
+        if (second >= 3600) {
+            time[2] = parseInt(second / 3600);
+            second %= 3600;
+        }
+        if (second >= 60) {
+            time[3] = parseInt(second / 60);
+            second %= 60;
+        }
+        if (second > 0) {
+            time[4] = second;
+        }
+        return time;
+    }
+    function setTime() {
+        /*此处为网站的创建时间*/
+        var create_time = Math.round(new Date(Date.UTC(2023, 05, 26, 22, 34, 00)).getTime() / 1000);//这里月份以0月份开始,以11月份结束
+        var timestamp = Math.round((new Date().getTime() + 8 * 60 * 60 * 1000) / 1000);
+        currentTime = secondToDate((timestamp - create_time));
+        currentTimeHtml = currentTime[0] + '年' + currentTime[1] + '天'
+            + currentTime[2] + '时' + currentTime[3] + '分' + currentTime[4]
+            + '秒';
+        document.getElementById("htmer_time").innerHTML = currentTimeHtml;
+    }
+    setInterval(setTime, 1000);
+
+    // 点击body元素可以出现小特效
+    //定义获取词语下标
+    var a_idx = 0;
+    jQuery(document).ready(function($) {
+        //点击body时触发事件
+        $("body").click(function (e) {
+            //需要显示的词语
+            var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正", "法治", "爱国", "敬业", "诚信", "友善");
+            var color = new Array("#ff6651", "#3dff2d", "#3b4cff", "#9bff18", "#30dfff", "#38ffd3", "#6cff87", "#69ff19", "#17ff38", "#1affa9", "#07f8ff", "#4092ff")
+            //设置词语给span标签
+            var $i = $("<span/>").text(a[a_idx]);
+            //下标等于原来下标+1  余 词语总数
+            a_idx = (a_idx + 1) % a.length;
+            //获取鼠标指针的位置，分别相对于文档的左和右边缘。
+            //获取x和y的指针坐标
+            var x = e.pageX, y = e.pageY;
+            //在鼠标的指针的位置给$i定义的span标签添加css样式
+            $i.css({
+                "z-index": 999999,
+                "top": y - 20,
+                "left": x,
+                "position": "absolute",
+                "font-weight": "bold",
+                "color": color[a_idx]
+            });
+            //在body添加这个标签
+            $("body").append($i);
+            //animate() 方法执行 CSS 属性集的自定义动画。
+            //该方法通过CSS样式将元素从一个状态改变为另一个状态。CSS属性值是逐渐改变的，这样就可以创建动画效果。
+            //详情请看http://www.w3school.com.cn/jquery/effect_animate.asp
+            $i.animate({
+                //将原来的位置向上移动180
+                "top": y - 180,
+                "opacity": 0
+                //1500动画的速度
+            }, 1500, function () {
+                //时间到了自动删除
+                $i.remove();
+            });
+        });
+    });
+
+  </script>
+</th:block>
+
+</body>
+</html>

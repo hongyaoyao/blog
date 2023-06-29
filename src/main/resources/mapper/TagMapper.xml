@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyy.mapper.TagMapper">
+    <resultMap id="tag" type="Tag">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="count" column="count"/>
+    </resultMap>
+    <select id="getBlogsTag" resultMap="tag">
+        select t.id, t.name, count(t.id) as count
+        from t_tag as t, t_blog as b, t_blog_tag as bt
+        where t.id = bt.tag_id and b.id = bt.blog_id and b.published = 1
+        group by t.id
+        order by count desc
+    </select>
+</mapper>

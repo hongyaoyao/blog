@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyy.mapper.BlogMapper">
+    <!--获取列表-->
+    <resultMap id="blog" type="Blog">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="recommend" column="recommend"/>
+        <result property="published" column="published"/>
+        <result property="flag" column="flag"/>
+        <result property="views" column="views"/>
+        <result property="typeId" column="type_id"/>
+        <result property="firstPicture" column="first_picture"/>
+        <result property="shareStatement" column="share_statement"/>
+        <result property="appreciation" column="appreciation"/>
+        <result property="commentabled" column="commentabled"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="tagIds" column="tag_ids"/>
+        <association property="type" javaType="Type">
+            <id property="id" column="type_id"/>
+            <result property="name" column="type_name"/>
+        </association>
+        <association property="user" javaType="User">
+            <id property="id" column="id"/>
+            <result property="avatar" column="avatar"/>
+            <result property="nickname" column="nickname"/>
+            <result property="username" column="username"/>
+            <result property="email" column="email"/>
+            <result property="username" column="username"/>
+        </association>
+        <collection property="tags" ofType="Tag">
+            <id property="id" column="tag_id"/>
+            <result property="name" column="tag_name"/>
+        </collection>
+    </resultMap>
+
+    <!--管理端显示博客列表-->
+    <select id="getAllBlogs" resultMap="blog">
+       select b.id, b.title, b.update_time, b.recommend, b.published, t.name as type_name
+       from t_blog as b left outer join t_type as t
+       on b.type_id = t.id
+       order by b.update_time desc
+    </select>
+
+    <!--管理端搜索博客-->
+    <select id="searchAllBlogs" resultMap="blog" parameterType="Blog">
+        /*模糊查询*/
+        <bind name="pattern" value="'%' + title + '%'"/>
+        select b.id, b.title, b.update_time, b.recommend, b.published, t.name as type_name
+        from t_blog as b, t_type as t
+        <where>
+            /*博客类型id=类型id*/
+            <if test="1 == 1">
+                b.type_id = t.id
+            </if>
+            /*根据博客类型查询*/
+            <if test="typeId != null and typeId != ''">
+                and b.type_id = #{typeId}
+            </if>
+            /*根据博客推荐查询*/
+            <if test="recommend != null and recommend != ''">
+                and b.recommend = #{recommend}
+            </if>
+            /*根据博客标题模糊查询*/
+            <if test="title != null and title != ''">
+                and b.title like #{pattern}
+            </if>
+        </where>
+        order by b.update_time desc
+    </select>
+
+
+
+    <!--客户端首页-->
+    <select id="getIndexBlogs" resultMap="blog">
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description, t.id as type_id, t.name as type_name, u.nickname, u.avatar
+        from t_blog as b, t_type as t, t_user as u
+        where b.type_id = t.id and b.user_id = u.id and b.published = 1
+        order by b.update_time desc
+    </select>
+
+    <!--客户端搜索-->
+    <select id="getSearchBlogs" resultMap="blog">
+        <bind name="pattern" value="'%' + query + '%'"/>
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description, t.id as type_id, t.name as type_name, u.nickname, u.avatar
+        from t_blog as b, t_type as t, t_user as u
+        where b.type_id = t.id and u.id = b.user_id  and b.published = 1 and (b.title like #{pattern} or b.content like #{pattern})
+        order by b.update_time desc
+    </select>
+
+    <!--客户端博客详情-->
+    <select id="getDetailedBlog" resultMap="blog">
+        select b.id, b.first_picture, b.flag, b.title, b.content, b.views, b.update_time, b.commentabled, b.share_statement, b.appreciation, t.id as type_id, t.name as type_name, u.nickname, u.avatar
+        from t_blog as b, t_user as u, t_type as t
+        where b.user_id = u.id and t.id = b.type_id and b.id = #{id}
+    </select>
+
+    <!--客户端分类页面获取博客-->
+    <select id="getBlogsByTypeId" resultMap="blog">
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description, t.id as type_id, t.name as type_name, u.nickname, u.avatar
+        from t_blog as b, t_type as t, t_user as u
+        where b.type_id = t.id and u.id = b.user_id and b.published = 1 and b.type_id = #{typeId}
+        order by b.update_time desc
+    </select>
+
+    <!--标签页面获取博客-->
+    <select id="getBlogsByTagId" resultMap="blog">
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description, t.id as type_id, t.name as type_name, u.nickname, u.avatar, tag.id as tag_id, tag.name as tag_name
+        from t_blog as b, t_type as t, t_user as u, t_blog_tag as bt, t_tag as tag
+        where b.type_id = t.id and u.id = b.user_id and bt.blog_id = b.id and bt.tag_id = tag.id and b.published = 1 and tag.id = #{tagId}
+        order by b.update_time desc
+    </select>
+
+</mapper>
